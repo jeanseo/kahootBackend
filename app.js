@@ -1,10 +1,13 @@
 const express = require('express');
+const graphqlHTTP = require('express-graphql');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const gamesRouter = require('./routes/game');
+const schema = require('./schema/schema');
 
 const app = express();
 
@@ -20,7 +23,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+//Route restAPI
+app.use('/api/', indexRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/games', gamesRouter);
+
+//Route GraphQL
+app.use('/graphql', graphqlHTTP({
+        //directing express-graphql to use this schema to map out the graph
+        schema,
+        //directing express-graphql to use graphiql when goto '/graphql' address in the browser
+        //which provides an interface to make GraphQl queries
+        graphiql:true
+}));
 
 module.exports = app;
