@@ -5,8 +5,7 @@ const Question = require('./Question');
 const quizSchema = mongoose.Schema({
     name: String,
     questions :[Question.schema],
-    owner : String,
-    games: [Game.schema]
+    owner : String
     //mots clés, domaines, difficulté,...
 });
 

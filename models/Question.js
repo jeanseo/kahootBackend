@@ -8,7 +8,7 @@ const questionSchema = mongoose.Schema({
             correct: Boolean
         }],
     order : Number,
-    time: Number,
+    time: Date,
     points: Number
 });
 

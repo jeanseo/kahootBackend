@@ -3,7 +3,7 @@ const { composeWithMongoose } = require('graphql-compose-mongoose') ;
 const { schemaComposer } = require('graphql-compose');
 const Quiz = require('../models/Quiz');
 const Game = require('../models/Game');
-const Answer = require('../models/Answer');
+const User = require('../models/User');
 
 const {
     GraphQLObjectType, GraphQLString,
@@ -18,6 +18,9 @@ const {
 const customizationOptions = {}; // left it empty for simplicity, described below
 const QuizTC = composeWithMongoose(Quiz, customizationOptions);
 const GameTC = composeWithMongoose(Game, customizationOptions);
+const UserTC = composeWithMongoose(User, customizationOptions);
+
+GameTC.addNestedFields({'players.score':{type:'Int'}})
 
 schemaComposer.Query.addFields({
     quizById: QuizTC.getResolver('findById'),
@@ -34,6 +37,13 @@ schemaComposer.Query.addFields({
     gameCount: GameTC.getResolver('count'),
     gameConnection: GameTC.getResolver('connection'),
     gamePagination: GameTC.getResolver('pagination'),
+    userById: UserTC.getResolver('findById'),
+    userByIds: UserTC.getResolver('findByIds'),
+    userOne: UserTC.getResolver('findOne'),
+    userMany: UserTC.getResolver('findMany'),
+    userCount: UserTC.getResolver('count'),
+    userConnection: UserTC.getResolver('connection'),
+    userPagination: UserTC.getResolver('pagination'),
 
 });
 
@@ -54,6 +64,14 @@ schemaComposer.Mutation.addFields({
     gameRemoveById: GameTC.getResolver('removeById'),
     gameRemoveOne: GameTC.getResolver('removeOne'),
     gameRemoveMany: GameTC.getResolver('removeMany'),
+    userCreateOne: UserTC.getResolver('createOne'),
+    userCreateMany: UserTC.getResolver('createMany'),
+    userUpdateById: UserTC.getResolver('updateById'),
+    userUpdateOne: UserTC.getResolver('updateOne'),
+    userUpdateMany: UserTC.getResolver('updateMany'),
+    userRemoveById: UserTC.getResolver('removeById'),
+    userRemoveOne: UserTC.getResolver('removeOne'),
+    userRemoveMany: UserTC.getResolver('removeMany'),
 });
 
 
