@@ -5,7 +5,10 @@ const Question = require('./Question');
 const quizSchema = mongoose.Schema({
     name: String,
     questions :[Question.schema],
-    owner : String
+    owner : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }
     //mots clés, domaines, difficulté,...
 });
 

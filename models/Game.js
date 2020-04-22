@@ -7,7 +7,10 @@ const gameSchema = mongoose.Schema({
         ref: "Quiz"
     },
     name: String,
-    owner : String,
+    owner : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    },
     pin : Number,
     creationDate : Date,
     startDate: Date,
