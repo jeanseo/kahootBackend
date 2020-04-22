@@ -38,7 +38,7 @@ app.use('/api/users',passport.authenticate('jwt', { session: false}), usersRoute
 app.use('/api/games',passport.authenticate('jwt', { session: false}), gamesRouter);
 
 //Route GraphQL
-app.use('/graphql',passport.authenticate('jwt', { session: false}), graphqlHTTP({
+app.use('/graphql', graphqlHTTP({
         //directing express-graphql to use this schema to map out the graph
         schema,
         //directing express-graphql to use graphiql when goto '/graphql' address in the browser
