@@ -108,13 +108,18 @@ exports.submitAnswer = async (req, res,) => {
     if(game == null){
         return res.sendStatus(404);
     }
-
+    console.log(game.quiz.questions);
+    const question = game.quiz.questions.find(q => q.id === req.body.question);
+    const answer = question.answers.find(a => a.id === req.body.answer);
     let player = game.players.find(p => p.id === req.body.player);
+
 
     player.answers.push({
         question: req.body.question,
         answer: req.body.answer,
         answeredTime: Date.now(),
+        points: question.points,
+        correct: answer.correct,
     });
 
     game.save()
@@ -122,3 +127,4 @@ exports.submitAnswer = async (req, res,) => {
         .catch((err)=>res.send(err));
 
 };
+

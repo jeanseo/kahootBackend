@@ -20,7 +20,8 @@ const QuizTC = composeWithMongoose(Quiz, customizationOptions);
 const GameTC = composeWithMongoose(Game, customizationOptions);
 const UserTC = composeWithMongoose(User, customizationOptions);
 
-GameTC.addNestedFields({'players.score':{type:'Int'}})
+GameTC.addNestedFields({'players.score':{type:'Int'}});
+GameTC.addNestedFields({'players.answers.score':{type:'Int'}});
 
 schemaComposer.Query.addFields({
     quizById: QuizTC.getResolver('findById'),
