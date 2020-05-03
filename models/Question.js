@@ -5,7 +5,8 @@ const questionSchema = mongoose.Schema({
     question: String,
     answers : [{
             answer : String,
-            correct: Boolean
+            correct: Boolean,
+            active: Boolean
         }],
     order : Number,
     time: Date,

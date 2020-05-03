@@ -50,7 +50,7 @@ exports.joinGame = async (req, res,) => {
         return res.sendStatus(404);
     }
     //  récupérer le game associé
-    const game = await Game.findOne({pin : req.body.pin});
+    let game = await Game.findOne({pin : req.body.pin});
     if(game == null){
         return res.sendStatus(404);
     }

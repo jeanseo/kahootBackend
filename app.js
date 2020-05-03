@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const gamesRouter = require('./routes/game');
+const quizzesRouter = require('./routes/quiz');
 const schema = require('./schema/schema');
 const passport = require('passport');
 require('./config/passport')(passport);
@@ -36,7 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/', indexRouter);
 app.use('/api/users',passport.authenticate('jwt', { session: false}), usersRouter);
 app.use('/api/games',passport.authenticate('jwt', { session: false}), gamesRouter);
-
+app.use('/api/quizzes', quizzesRouter);
 //Route GraphQL
 app.use('/graphql', graphqlHTTP({
         //directing express-graphql to use this schema to map out the graph
