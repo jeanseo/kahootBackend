@@ -9,7 +9,7 @@ const questionSchema = mongoose.Schema({
             active: Boolean
         }],
     order : Number,
-    time: Date,
+    time: Number,
     points: Number
 });
 
