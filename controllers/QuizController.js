@@ -25,4 +25,15 @@ exports.updateQuiz = async (req, res, next) => {
         .catch(error => res.status(400).json({ error }));
 };
 
+exports.deleteQuiz = async (req, res, next) => {
+    //récupérer l'id
+
+    if (!req.params.id){
+        return res.status(500).json({message : "id missing"});
+    }
+
+    Quiz.deleteOne({ _id: req.params.id })
+        .then((quiz) => res.status(200).json(quiz))
+        .catch(error => res.status(400).json({ error }));
+};
 

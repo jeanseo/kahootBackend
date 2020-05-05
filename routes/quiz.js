@@ -7,5 +7,6 @@ require('../config/passport')(passport);
 /* POST CREATE GAME. */
 router.get('/:id', QuizController.getOneQuiz);
 router.put('/:id', QuizController.updateQuiz);
+router.delete('/:id', QuizController.deleteQuiz);
 
 module.exports = router;
