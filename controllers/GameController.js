@@ -7,6 +7,8 @@ const gameStatus = {
     finished : "finished"
 };
 
+
+
 exports.getOneGame = (req, res, next) => {
     if (!req.params._id)
         res.status(404);
@@ -20,7 +22,6 @@ exports.getOneGame = (req, res, next) => {
             model:'Question'
         })
         .then((game) => {
-            console.log(game);
             res.status(200).json(game)})
         .catch((err) => res.status(404).json({err}))
 };
@@ -33,7 +34,6 @@ exports.createGame = async (req, res) => {
     if (!quiz){
         return res.status(404).send('Quiz not found');
     }
-    console.log("quiz existant "+req.body.quizId);
 
     //On génère un PIN qui doit être unique
     let pin;
@@ -42,7 +42,6 @@ exports.createGame = async (req, res) => {
         pin = Math.floor(100000 + Math.random() * 900000);
         pinExists = await Game.exists({pin: pin});
     }
-    console.log("pin: "+pin);
 
     let game = new Game({
         name: req.body.name,
@@ -52,15 +51,12 @@ exports.createGame = async (req, res) => {
         creationDate: Date.now(),
         status: gameStatus.pending,
     });
-    console.log(game);
-
     game.save()
         .then(()=>res.status(201).json(game))
         .catch((err)=>res.send(err));
 };
 
 exports.joinGame = async (req, res,) => {
-    console.log('joingame');
 
     if (!req.body.name){
         return res.status(500).json({message : "name missing"});
@@ -78,15 +74,19 @@ exports.joinGame = async (req, res,) => {
         joinedDate: Date.now()
     });
     //On doit retourner l'_id du joueur
-    console.log(game);
     const playerId = game.players[game.players.length-1]._id;
 
     game.save()
-        .then(()=>res.status(200).json({gameId:game._id, playerId: playerId}))
+        .then(()=>res.status(200).json({game: game, playerId: playerId}))
         .catch((err)=>res.send(err));
 };
 
-exports.startGame = async (req, res,) => {
+exports.startGame = async (endpoint, socket) => {
+
+    socket.on('game',function(game){
+        endpoint.emit("coucou")
+    })
+    /*
     const game = await Game.findById(req.body.id)
         .populate({
             path:'quiz',
@@ -96,7 +96,11 @@ exports.startGame = async (req, res,) => {
     if(game == null){
         return res.sendStatus(404);
     }
+
+     */
     //Peut-être vérifier qu'il y a au moins un ou deux joueurs
+
+/*
 
     game.status = gameStatus.started;
     game.startDate = Date.now();
@@ -106,10 +110,11 @@ exports.startGame = async (req, res,) => {
     }
 
 
-
     game.save()
         .then(()=>res.status(200).json(game))
         .catch((err)=>res.send(err));
+
+ */
 };
 
 exports.submitAnswer = async (req, res,) => {
@@ -127,7 +132,6 @@ exports.submitAnswer = async (req, res,) => {
     if(game == null){
         return res.sendStatus(404);
     }
-    console.log(game.quiz.questions);
     const question = game.quiz.questions.find(q => q.id === req.body.question);
     const answer = question.answers.find(a => a.id === req.body.answer);
     let player = game.players.find(p => p.id === req.body.player);
@@ -145,5 +149,20 @@ exports.submitAnswer = async (req, res,) => {
         .then(()=>res.status(200).json())
         .catch((err)=>res.send(err));
 
+};
+
+exports.HandleSocket = (socket) => {
+    console.log('a user connected on game');
+    socket.on('subscribeToGame', (player)=> {
+            console.log('joined game '+JSON.stringify(player.player.name));
+            console.log(`join id ${player.game}`);
+            socket.join(player.game);
+            socket.to(player.game).emit('newplayer',player.player);
+    });
+    socket.on('manageGame', (game)=> {
+        console.log('teacher joined game ');
+        console.log(`join id ${game.game}`);
+        socket.join(game.game);
+    });
 };
 

@@ -1,3 +1,5 @@
+const http = require('http');
+
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const path = require('path');
@@ -13,9 +15,12 @@ const passport = require('passport');
 require('./config/passport')(passport);
 const config = require('./config/database');
 const cors = require('cors');
+const GameController = require('./controllers/GameController');
 
 
 const app = express();
+const io = require('socket.io')();
+app.io = io;
 
 //Permettre les requêtes CORS
 app.use(cors());
@@ -51,6 +56,22 @@ app.use('/graphql', graphqlHTTP({
         //which provides an interface to make GraphQl queries
         graphiql:true
 }));
+
+const game = io
+    .of('/games')
+    .on('connection', function (socket) {
+        GameController.HandleSocket(socket);
+    });
+
+io.on('connection', (client) => {
+    client.on('subscribeToTimer', (interval) => {
+        console.log('client is subscribing to timer with interval ', interval);
+        setInterval(() => {
+            client.emit('timer', new Date());
+        }, interval);
+    });
+});
+
 
 module.exports = app;
 //changement ok
