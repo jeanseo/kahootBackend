@@ -7,12 +7,30 @@ const gameStatus = {
     finished : "finished"
 };
 
-exports.createGame = async (req, res) => {
+exports.getOneGame = (req, res, next) => {
+    if (!req.params._id)
+        res.status(404);
+    Game.findOne({ _id: req.params.id})
+        .populate({
+        path:'quiz',
+        model:'Quiz'
+    })
+        .populate({
+            path:'players.answers.question',
+            model:'Question'
+        })
+        .then((game) => {
+            console.log(game);
+            res.status(200).json(game)})
+        .catch((err) => res.status(404).json({err}))
+};
 
+
+exports.createGame = async (req, res) => {
     // Vérifier  l'id du quiz
     console.log("création d'un game");
-    const quizExists = await Quiz.exists({_id: req.body.quizId});
-    if (!quizExists){
+    const quiz = await Quiz.findOne({_id: req.params.id});
+    if (!quiz){
         return res.status(404).send('Quiz not found');
     }
     console.log("quiz existant "+req.body.quizId);
@@ -30,7 +48,7 @@ exports.createGame = async (req, res) => {
         name: req.body.name,
         owner: req.body.owner,
         pin: pin,
-        quiz: req.body.quizId,
+        quiz: quiz,
         creationDate: Date.now(),
         status: gameStatus.pending,
     });
@@ -42,6 +60,7 @@ exports.createGame = async (req, res) => {
 };
 
 exports.joinGame = async (req, res,) => {
+    console.log('joingame');
 
     if (!req.body.name){
         return res.status(500).json({message : "name missing"});

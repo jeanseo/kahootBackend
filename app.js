@@ -35,8 +35,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Route restAPI
 app.use('/api/', indexRouter);
-app.use('/api/users',passport.authenticate('jwt', { session: false}), usersRouter);
-app.use('/api/games',passport.authenticate('jwt', { session: false}), gamesRouter);
+//Avec authentication
+//app.use('/api/users',passport.authenticate('jwt', { session: false}), usersRouter);
+//app.use('/api/games',passport.authenticate('jwt', { session: false}), gamesRouter);
+//app.use('/api/quizzes',passport.authenticate('jwt', { session: false}), quizzesRouter);
+//Sans authentification
+app.use('/api/users', usersRouter);
+app.use('/api/games',gamesRouter);
 app.use('/api/quizzes', quizzesRouter);
 //Route GraphQL
 app.use('/graphql', graphqlHTTP({

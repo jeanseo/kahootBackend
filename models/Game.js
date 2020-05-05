@@ -4,12 +4,12 @@ const Quiz = require('./Quiz');
 const gameSchema = mongoose.Schema({
     quiz: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Quiz"
+        ref: 'Quiz'
     },
     name: String,
     owner : {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: 'User'
     },
     pin : Number,
     creationDate : Date,
@@ -19,7 +19,7 @@ const gameSchema = mongoose.Schema({
     players : [Player.schema],
     currentQuestion : {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Question"
+        ref: 'Question'
     }
 }
 );
