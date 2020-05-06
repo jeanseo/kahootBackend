@@ -81,40 +81,39 @@ exports.joinGame = async (req, res,) => {
         .catch((err)=>res.send(err));
 };
 
-exports.startGame = async (endpoint, socket) => {
+exports.startGame = async (id) => {
 
-    socket.on('game',function(game){
-        endpoint.emit("coucou")
-    })
-    /*
-    const game = await Game.findById(req.body.id)
+    console.log(`Démarrage du jeu ${id}`)
+    const game = await Game.findById(id)
         .populate({
             path:'quiz',
-            model: 'Quiz'
-
+            model:'Quiz'
+        })
+        .populate({
+            path:'quiz.questions',
+            model:'Question'
+        })
+        .populate({
+            path:'players.answers.question',
+            model:'Question'
         });
     if(game == null){
-        return res.sendStatus(404);
+        console.log('game not found');
+        return;
     }
 
-     */
     //Peut-être vérifier qu'il y a au moins un ou deux joueurs
-
-/*
 
     game.status = gameStatus.started;
     game.startDate = Date.now();
-    console.log(game.quiz);
+    console.log(game);
     if(game.quiz.questions.length > 0){
         game.currentQuestion = game.quiz.questions[0]._id;
     }
 
-
     game.save()
-        .then(()=>res.status(200).json(game))
-        .catch((err)=>res.send(err));
-
- */
+        .then(()=>{return game})
+        .catch((err)=>console.log(err));
 };
 
 exports.submitAnswer = async (req, res,) => {
@@ -126,8 +125,11 @@ exports.submitAnswer = async (req, res,) => {
     const game = await Game.findById(req.body.game)
         .populate({
             path:'quiz',
-            model: 'Quiz'
-
+            model:'Quiz'
+        })
+        .populate({
+            path:'players.answers.question',
+            model:'Question'
         });
     if(game == null){
         return res.sendStatus(404);
@@ -164,5 +166,15 @@ exports.HandleSocket = (socket) => {
         console.log(`join id ${game.game}`);
         socket.join(game.game);
     });
-};
+    socket.on('startGame', (game)=> {
+        console.log('teacher a demarré la partie');
+        console.log(JSON.stringify(game));
+            const newGame = this.startGame(game.id);
+            if(newGame){
+            socket.to(game.id).emit('gameStarted',newGame);
+            }
+        });
+    };
+
+
 
